@@ -1,0 +1,29 @@
+- name: Install nginx
+  apt: 
+    pkg: nginx
+
+- name: create nginx root directory
+  file:
+    path: /var/www/
+    state: directory
+    owner: root
+    group: root
+
+- name: download and install demo page
+  unarchive:
+    src: https://github.com/llambiel/letsecureme/releases/download/1.0.0/demo.tar.gz
+    dest: /var/www
+    remote_src: True
+    mode: u=rwX,g=rX,o=rX
+    owner: root
+    group: www-data
+
+- name: configure nginx
+  template:
+    src: nginx.default.cfg.j2
+    dest: /etc/nginx/sites-available/default
+    owner: root
+    group: root
+    mode: 0640
+    force: yes
+  notify: restart nginx

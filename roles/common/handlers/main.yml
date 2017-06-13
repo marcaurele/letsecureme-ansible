@@ -1,0 +1,13 @@
+- name: restart ssh
+  service: name=ssh state=restarted
+
+- name: reboot
+  shell: sleep 2 && /sbin/reboot
+  poll: 0
+  async: 1
+  become: yes
+  become_method: sudo
+  ignore_errors: true
+
+- name: wait reboot
+  local_action: wait_for host="{{ inventory_hostname }}" port=22 state=started delay=30

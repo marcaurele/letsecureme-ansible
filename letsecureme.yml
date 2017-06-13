@@ -1,0 +1,23 @@
+---
+
+- name: Python2.7 check
+  hosts: all
+  remote_user: root
+  gather_facts: False
+  tasks:
+    - name: Ensure python 2.7 is installed for Ansible
+      raw: apt-get install -y python2.7 python-simplejson
+
+- name: Install common
+  hosts: all
+  remote_user: root
+
+  roles:
+    - common
+
+- name: Setup letsecure.me server
+  hosts: all
+  remote_user: root
+
+  roles:
+    - secureme

@@ -1,0 +1,24 @@
+- name: disable SSH password authentication
+  replace:
+    path: /etc/ssh/sshd_config
+    regexp: PasswordAuthentication yes
+    replace: PasswordAuthentication no
+  notify: restart ssh
+
+- name: apt-get update
+  apt: update_cache=yes cache_valid_time=3600
+
+- name: apt-get dist-upgrade
+  apt: upgrade=dist
+
+- name: check if a reboot is required
+  stat: path=/var/run/reboot-required get_md5=no
+  failed_when: False
+  register: reboot_required
+  changed_when: reboot_required.stat.exists == true
+  notify:
+    - reboot
+    - wait reboot
+
+- name: install fail2ban
+  apt: pkg=fail2ban
