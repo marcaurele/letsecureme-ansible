@@ -1,6 +1,13 @@
-- name: Install nginx
-  apt: 
-    pkg: nginx
+- name: add certbot let's encrypt repository
+  apt_repository:
+    repo: ppa:certbot/certbot
+    update_cache: yes
+
+- name: install let's encrypt certbot tool
+  apt: pkg=certbot
+
+- name: install nginx
+  apt: pkg=nginx
 
 - name: create nginx root directory
   file:
@@ -18,7 +25,32 @@
     owner: root
     group: www-data
 
-- name: configure nginx
+# Need to check if new certif is required due to new domain names
+- name: check if we already have a certificate
+  stat: path=/etc/letsencrypt/live/{{ domains[0] }}/fullchain.pem
+  register: cert_stat
+
+# Add check for cert renewal based on certf file date?
+
+- name: update nginx confguration
+  template:
+    src: nginx.httponly.cfg.j2
+    dest: /etc/nginx/sites-available/default
+    owner: root
+    group: root
+    mode: 0640
+    force: yes
+  when: cert_stat.stat.exists == false
+
+- name: reload nginx
+  service: name=nginx state=reloaded
+  when: cert_stat.stat.exists == false
+
+- name: generate 1st let's encrypt certificate
+  shell: "certbot certonly --test-cert --non-interactive -a webroot --webroot-path=/var/www/demo -d {{ domains | join(',') }} --agree-tos -m {{ email }}"
+  when: cert_stat.stat.exists == false
+
+- name: set final nginx configuration
   template:
     src: nginx.default.cfg.j2
     dest: /etc/nginx/sites-available/default
