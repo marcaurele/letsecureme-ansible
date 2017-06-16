@@ -59,3 +59,19 @@
     mode: 0640
     force: yes
   notify: restart nginx
+
+- name: download certificat renewal script
+  get_url:
+    url: https://raw.githubusercontent.com/llambiel/letsecureme/master/scripts/renewCerts.sh
+    dest: /root/renewCerts.sh
+    force: yes
+    owner: root
+    group: root
+    mode: 0750
+
+- name: install cronjob for certificat renewal
+  cron:
+    name: "letsencrypt certificat renewal"
+    special_time: daily
+    state: present
+    job: "/root/renewCerts.sh"
