@@ -8,6 +8,7 @@ from https://letsecure.me.
 Create your inventory file with those 2 variables:
  - `domains`: a list of domain addresses which your webserver should server
  - `email`: the email address used to generate the let's encrypt certificate
+ - `test`: create a test certificate if defined
 
 ```
 [letsecureme]
@@ -19,9 +20,11 @@ make a HTTP call.*
 
 ## Execute the playbook
 
-*For now it only create a test certificate.*
-
 ```
+# To generate a test certificate
+ansible-playbook -i hosts letsecureme.yml --extra-vars "test=true"
+
+# To generate a true let's encrypt certificate
 ansible-playbook -i hosts letsecureme.yml
 ```
 

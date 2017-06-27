@@ -46,9 +46,17 @@
   service: name=nginx state=reloaded
   when: cert_stat.stat.exists == false
 
-- name: generate 1st let's encrypt certificate
+- name: generate test let's encrypt certificate
   shell: "certbot certonly --test-cert --non-interactive -a webroot --webroot-path=/var/www/demo -d {{ domains | join(',') }} --agree-tos -m {{ email }}"
-  when: cert_stat.stat.exists == false
+  when:
+    - cert_stat.stat.exists == false
+    - "test is defined"
+
+- name: generate let's encrypt certificate
+  shell: "certbot certonly --non-interactive -a webroot --webroot-path=/var/www/demo -d {{ domains | join(',') }} --agree-tos -m {{ email }}"
+  when:
+    - cert_stat.stat.exists == false
+    - "test is not defined"
 
 - name: set final nginx configuration
   template:
