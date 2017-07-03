@@ -18,7 +18,7 @@
 
 - name: download and install demo page
   unarchive:
-    src: https://github.com/llambiel/letsecureme/releases/download/1.0.0/demo.tar.gz
+    src: https://github.com/llambiel/letsecureme/releases/download/1.1.0/demo.tar.gz
     dest: /var/www
     remote_src: True
     mode: u=rwX,g=rX,o=rX
